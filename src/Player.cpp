@@ -38,7 +38,7 @@ void Player::move(InputData inputData, float deltaTime)
     playerDirection.y += inputData.m_movingDown;
     playerDirection = VecNormalized(playerDirection);
 
-    sf::Transformable::move(playerDirection * PlayerSpeed * deltaTime);
+    sf::Transformable::move(playerDirection * m_pGame->p_playerSpeed * deltaTime);
     // this was missing the y direction clamp and the sprite size offset
     setPosition(
         std::clamp(
@@ -78,4 +78,11 @@ void Player::draw(sf::RenderTarget &target, sf::RenderStates states) const
 {
     Rectangle::draw(target, states);
     m_pWeapon->draw(target, states);
+}
+
+bool Player::isDead() const
+{
+    if (m_pGame->p_godMode)
+        return false;
+    return m_isDead;
 }

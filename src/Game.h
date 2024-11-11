@@ -49,6 +49,17 @@ public:
     void vampireSpawner(float deltaTime);
 
     std::array<std::unique_ptr<Wave>, MaxWaveCount> p_waves;
+
+    float p_enemySpeed = VampireSpeed;
+    int p_scorePreKill = 1;
+
+    float p_playerSpeed = PlayerSpeed;
+    bool p_godMode = false;
+    sf::Keyboard::Key p_playerup = sf::Keyboard::Up;
+    sf::Keyboard::Key p_playerdown = sf::Keyboard::Down;
+    sf::Keyboard::Key p_playerleft = sf::Keyboard::Left;
+    sf::Keyboard::Key p_playerright = sf::Keyboard::Right;
+    sf::Keyboard::Key p_playerattack = sf::Keyboard::Space;
 private:
     std::unique_ptr<Player> m_pPlayer;
 
@@ -59,6 +70,7 @@ private:
     float m_vampireCooldown = 0.0f;
     float m_nextVampireCooldown = 2.0f;
     int m_spawnCount = 0;
+    int m_score = 0;
     
     sf::Font m_font;
     sf::Texture m_vampTexture;

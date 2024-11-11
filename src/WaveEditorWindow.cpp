@@ -12,9 +12,9 @@ WaveEditorWindow::WaveEditorWindow(Game* game) : m_game(game),  m_selectedIndex(
 
 void WaveEditorWindow::draw()
 {
-    ImGui::Begin("Wave Editor", 0, ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoTitleBar);
+    ImGui::Begin("Wave Editor", 0, ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize);
     ImGui::SetWindowPos(ImVec2(10,10));
-    ImGui::SetWindowSize(ImVec2(400, 600));
+    ImGui::SetWindowSize(ImVec2(400, 610));
     if (ImGui::BeginCombo("Select Wave", m_currentWave->getName().c_str()))
     {
         for (int i = 0; i < m_game->p_waves.size(); i++)
@@ -29,7 +29,6 @@ void WaveEditorWindow::draw()
         ImGui::EndCombo();
     }
 
-    // needs to be made cooler
     if (m_currentWave != nullptr)
     {
         // ImGui::Text("Number of enemies in Wave");
@@ -46,13 +45,13 @@ void WaveEditorWindow::draw()
                 ImVec2(300, 80), ImVec2(220, 0), ImVec2(80, 0), ImVec2(0, 80), ImVec2(0, 220), ImVec2(80, 300), ImVec2(220, 300), ImVec2(300, 220),
                 ImVec2(300, 80)
             };
-        ImVec2 centerPoint(210, 450);
+        ImVec2 centerPoint(210, 460);
         // simple transformation to get the desired effect
         for (auto& point : outline)
         {
             // move to the bottom
             point.x += 60;
-            point.y += 300;
+            point.y += 310;
         }
         // draw the outline
         dl->AddPolyline(outline.data(), 9, 0x90ff1000, 0, 2);
@@ -70,7 +69,8 @@ void WaveEditorWindow::draw()
             dl->AddCircleFilled(midPoint, 3, 0xffff0000);
         }
         dl->AddConvexPolyFilled(plot.data(), 8, 0x80808000);
-        // should be the following but my cmake compilation somehow doesnt allow for it somehow
+        // should be the following but my cmake setup somehow doesnt allow for it 
+        // it is supposed to live in the imgui_draw.cpp file, which should be included based on my understanding
         // dl->AddConcavePolyFilled(plot.data(), 8, 0x80808000);
     }
 

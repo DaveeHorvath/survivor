@@ -103,6 +103,7 @@ void Game::update(float deltaTime)
             if (m_deadEnemies.size() < MaxDeadEnemiesStored)
                 m_deadEnemies.push_front(*it);
             it = m_aliveEnemies.erase(it);
+            m_score++;
         }
         else
             it++;
@@ -122,10 +123,8 @@ void Game::draw(sf::RenderTarget &target, sf::RenderStates states) const
     {
         textSetupDone = true;
         startText.setFont(m_font);
-        startText.setString("Game Start!");
         startText.setFillColor(sf::Color::White);
         startText.setStyle(sf::Text::Bold);
-        startText.setPosition(sf::Vector2f((ScreenWidth - startText.getLocalBounds().getSize().x) * 0.5, 20));
         timerText.setFont(m_font);
         timerText.setFillColor(sf::Color::White);
         timerText.setStyle(sf::Text::Bold);
@@ -137,6 +136,8 @@ void Game::draw(sf::RenderTarget &target, sf::RenderStates states) const
     switch (m_state)
     {
     case State::WAITING:
+        startText.setPosition(sf::Vector2f((ScreenWidth - startText.getLocalBounds().getSize().x) * 0.5, 20));
+        startText.setString("Last score: " + std::to_string(m_score));
         target.draw(startText);
         break;
     case State::ACTIVE:
@@ -160,6 +161,7 @@ void Game::draw(sf::RenderTarget &target, sf::RenderStates states) const
 void Game::startGame()
 {
     m_state = State::ACTIVE;
+    m_score = 0;
     for (auto& wave : p_waves)
     {
         wave->init();

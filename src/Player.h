@@ -27,14 +27,15 @@ public:
     void update(float deltaTime);
     virtual void draw(sf::RenderTarget& target, sf::RenderStates states) const override;
 
-    bool isDead() const { return m_isDead; }
+    bool isDead() const;
     void setIsDead(bool isDead) { m_isDead = isDead; }
 
     Weapon* getWeapon() { return m_pWeapon.get(); }
-
+    
 private:
     bool    m_isDead = false;
     eDirection m_direction = LEFT;
     Game*   m_pGame;
     std::unique_ptr<Weapon> m_pWeapon;
+    
 };

@@ -1,6 +1,7 @@
 #include "InputHandler.h"
 #include "Weapon.h"
 #include "Player.h"
+#include "Game.h"
 
 GameInput::GameInput(Game* pGame, Player* pPlayer) :
     m_pGame(pGame), m_pPlayer(pPlayer)
@@ -29,23 +30,23 @@ void GameInput::update(float deltaTime)
 
 void GameInput::onKeyPressed(sf::Keyboard::Key key)
 {
-    if (key == sf::Keyboard::Up)
+    if (key == m_pGame->p_playerup)
     {
         m_inputData.m_movingUp = true;
     }
-    else if (key == sf::Keyboard::Down)
+    else if (key == m_pGame->p_playerdown)
     {
         m_inputData.m_movingDown = true;
     }
-    else if (key == sf::Keyboard::Left)
+    else if (key == m_pGame->p_playerleft)
     {
         m_inputData.m_movingLeft = true;
     }
-    else if (key == sf::Keyboard::Right)
+    else if (key == m_pGame->p_playerright)
     {
         m_inputData.m_movingRight = true;
     }
-    else if (key == sf::Keyboard::Space)
+    else if (key == m_pGame->p_playerattack)
     {
         if (m_inputData.m_spaceReleased)
         {
@@ -57,23 +58,23 @@ void GameInput::onKeyPressed(sf::Keyboard::Key key)
 
 void GameInput::onKeyReleased(sf::Keyboard::Key key)
 {
-    if (key == sf::Keyboard::Up)
+    if (key == m_pGame->p_playerup)
     {
         m_inputData.m_movingUp = false;
     }
-    else if (key == sf::Keyboard::Down)
+    else if (key == m_pGame->p_playerdown)
     {
         m_inputData.m_movingDown = false;
     }
-    else if (key == sf::Keyboard::Left)
+    else if (key == m_pGame->p_playerleft)
     {
         m_inputData.m_movingLeft = false;
     }
-    else if (key == sf::Keyboard::Right)
+    else if (key == m_pGame->p_playerright)
     {
         m_inputData.m_movingRight = false;
     }
-    else if (key == sf::Keyboard::Space)
+    else if (key == m_pGame->p_playerattack)
     {
         m_inputData.m_space = false;
         m_inputData.m_spaceReleased = true;

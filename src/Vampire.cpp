@@ -21,7 +21,7 @@ void Vampire::update(float deltaTime)
 {    
     Player* pPlayer = m_pGame->getPlayer();
 
-    if (collidesWith(pPlayer->getWeapon()))
+    if (collidesWith(pPlayer->getWeapon()) && pPlayer->getWeapon()->isActive())
     {
         setIsKilled(true);
         return;
@@ -33,6 +33,6 @@ void Vampire::update(float deltaTime)
     sf::Vector2f playerCenter = pPlayer->getCenter();
     sf::Vector2f direction = VecNormalized(playerCenter - getCenter());
     // passing as rvalue could have minimal speedup on a bigger scale
-    sf::Transformable::move(direction * VampireSpeed * deltaTime);
+    sf::Transformable::move(direction * m_pGame->p_enemySpeed * deltaTime);
     m_sprite.setPosition(getPosition());
 }

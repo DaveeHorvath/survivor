@@ -9,6 +9,8 @@
 #include "imgui-SFML.h"
 #include "WaveEditorWindow.h"
 #include "GameStartWindow.h"
+#include "EnemyEditorWindow.h"
+#include "PlayerEditorWindow.h"
 
 int main(int argc, char* argv[])
 {
@@ -27,6 +29,8 @@ int main(int argc, char* argv[])
 
     std::unique_ptr<WaveEditorWindow> waveEditor = std::make_unique<WaveEditorWindow>(pGame.get());
     std::unique_ptr<GameStartWindow> gameStartWindow = std::make_unique<GameStartWindow>(pGame.get());
+    std::unique_ptr<EnemyEditorWindow> enemyEditorWindow = std::make_unique<EnemyEditorWindow>(pGame.get());
+    std::unique_ptr<PlayerEditorWindow> playerEditorWindow = std::make_unique<PlayerEditorWindow>(pGame.get());
 
     // init imgui
     ImGui::SFML::Init(window);
@@ -64,6 +68,8 @@ int main(int argc, char* argv[])
         {
             waveEditor->draw();
             gameStartWindow->draw();
+            enemyEditorWindow->draw();
+            playerEditorWindow->draw();
         }
         
         // clear the window with black color
