@@ -36,7 +36,6 @@ void WaveEditorWindow::draw()
     {
         // sadly hardcoded, sorry
         std::ofstream file;
-        std::cout << ResourceManager::getFilePath("example.setup") << "\n";
         file.open(ResourceManager::getFilePath("example.setup"), std::ios::trunc | std::ios::out);
         if (!file.good())
             std::cout << "Error while opening output file\n";

@@ -25,6 +25,8 @@ Game::Game() :
         p_waves[i] = std::make_unique<Wave>("Wave" + std::to_string(i));
     m_aliveEnemies.clear();
     m_deadEnemies.clear();
+    // dont reallocate for small numbers
+    m_aliveEnemies.reserve(64);
 }
 
 Game::~Game()
