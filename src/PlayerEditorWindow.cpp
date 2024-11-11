@@ -9,7 +9,7 @@ PlayerEditorWindow::PlayerEditorWindow(Game *game) : m_game(game)
 void PlayerEditorWindow::draw()
 {
     ImGui::Begin("Player Editor", 0, ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize );
-    ImGui::SetWindowPos(ImVec2(10,700));
+    ImGui::SetWindowPos(ImVec2(10,730));
     ImGui::SetWindowSize(ImVec2(400, 200));
 
     ImGui::DragFloat("Player Speed", &(m_game->p_playerSpeed));
@@ -19,7 +19,7 @@ void PlayerEditorWindow::draw()
     InputSelector("Down", m_game->p_playerdown);
     InputSelector("Left", m_game->p_playerleft);
     InputSelector("Right", m_game->p_playerright);
-    InputSelector("Right", m_game->p_playerattack);
+    InputSelector("Attack", m_game->p_playerattack);
 
     ImGui::End();
 }

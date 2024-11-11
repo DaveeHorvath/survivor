@@ -8,4 +8,5 @@ public:
     void draw();
 private:
     Game* m_game;
+    char m_name[14] = "";
 };

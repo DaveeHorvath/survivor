@@ -3,6 +3,10 @@
 #include "Wave.h"
 #include "Game.h"
 #include <array>
+#include "ResourceManager.h"
+#include <fstream>
+#include <iostream>
+#include <string>
 
 WaveEditorWindow::WaveEditorWindow(Game* game) : m_game(game),  m_selectedIndex(0)
 {
@@ -14,7 +18,7 @@ void WaveEditorWindow::draw()
 {
     ImGui::Begin("Wave Editor", 0, ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize);
     ImGui::SetWindowPos(ImVec2(10,10));
-    ImGui::SetWindowSize(ImVec2(400, 610));
+    ImGui::SetWindowSize(ImVec2(400, 640));
     if (ImGui::BeginCombo("Select Wave", m_currentWave->getName().c_str()))
     {
         for (int i = 0; i < m_game->p_waves.size(); i++)
@@ -27,6 +31,24 @@ void WaveEditorWindow::draw()
             }
         }
         ImGui::EndCombo();
+    }
+    if (ImGui::Button("Save Configuration"))
+    {
+        // sadly hardcoded, sorry
+        std::ofstream file;
+        std::cout << ResourceManager::getFilePath("example.setup") << "\n";
+        file.open(ResourceManager::getFilePath("example.setup"), std::ios::trunc | std::ios::out);
+        if (!file.good())
+            std::cout << "Error while opening output file\n";
+        for (auto& wave : m_game->p_waves)
+        {
+            file << wave->getName() << "\n";
+            file << wave->p_enemyNumber << "\n";
+            file << wave->m_waveDuration << "\n";
+            for (auto& dist : wave->m_directions)
+                file << dist << "\n";
+        }
+        file.close();
     }
 
     if (m_currentWave != nullptr)
@@ -45,13 +67,13 @@ void WaveEditorWindow::draw()
                 ImVec2(300, 80), ImVec2(220, 0), ImVec2(80, 0), ImVec2(0, 80), ImVec2(0, 220), ImVec2(80, 300), ImVec2(220, 300), ImVec2(300, 220),
                 ImVec2(300, 80)
             };
-        ImVec2 centerPoint(210, 460);
-        // simple transformation to get the desired effect
+        ImVec2 centerPoint(210, 490);
+        // simple transformation to get the desired position
         for (auto& point : outline)
         {
             // move to the bottom
             point.x += 60;
-            point.y += 310;
+            point.y += 340;
         }
         // draw the outline
         dl->AddPolyline(outline.data(), 9, 0x90ff1000, 0, 2);
@@ -62,12 +84,15 @@ void WaveEditorWindow::draw()
         {
             dl->AddLine(centerPoint, outline[i], 0x8800ff00, 2);
             ImVec2 midPoint;
+            // linear interpolation where the current weight is a precentile
             midPoint.x = outline[i].x * (m_currentWave->m_directions[i] / 100.0f) + centerPoint.x * (1 - m_currentWave->m_directions[i] / 100.0f);
             midPoint.y = outline[i].y * (m_currentWave->m_directions[i] / 100.0f) + centerPoint.y * (1 - m_currentWave->m_directions[i] / 100.0f);
             plot[i] = midPoint;
+            // descirptors
             dl->AddText(midPoint, 0xffffffff, std::to_string(i).c_str());
             dl->AddCircleFilled(midPoint, 3, 0xffff0000);
         }
+        // add the shape describing the distribution
         dl->AddConvexPolyFilled(plot.data(), 8, 0x80808000);
         // should be the following but my cmake setup somehow doesnt allow for it 
         // it is supposed to live in the imgui_draw.cpp file, which should be included based on my understanding

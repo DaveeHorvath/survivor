@@ -28,7 +28,7 @@ public:
     virtual void draw(sf::RenderTarget& target, sf::RenderStates states) const override;
 
     bool isDead() const;
-    void setIsDead(bool isDead) { m_isDead = isDead; }
+    void setIsDead(bool isDead);
 
     Weapon* getWeapon() { return m_pWeapon.get(); }
     

@@ -86,3 +86,8 @@ bool Player::isDead() const
         return false;
     return m_isDead;
 }
+
+void Player::setIsDead(bool isDead)
+{
+    m_isDead = isDead;
+}

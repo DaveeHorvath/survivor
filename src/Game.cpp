@@ -3,7 +3,7 @@
 #include <SFML/Graphics.hpp>
 #include <SFML/System.hpp>
 #include <iostream>
-
+#include <limits>
 #include "ResourceManager.h"
 #include "InputHandler.h"
 #include "Weapon.h"
@@ -103,7 +103,8 @@ void Game::update(float deltaTime)
             if (m_deadEnemies.size() < MaxDeadEnemiesStored)
                 m_deadEnemies.push_front(*it);
             it = m_aliveEnemies.erase(it);
-            m_score++;
+            if (m_score < std::numeric_limits<int>::max() - p_scorePreKill)
+                m_score += p_scorePreKill;
         }
         else
             it++;
@@ -192,6 +193,18 @@ void Game::vampireSpawner(float deltaTime)
         progressInfiniteMode(deltaTime);
 }
 
+void Game::saveScore()
+{
+    m_scores.emplace_back(m_currentPlayer, m_score);
+}
+
+void Game::setName(const std::string& s)
+{
+    m_currentPlayer = s;
+    if (s == "")
+        m_currentPlayer = "goofy";
+}
+
 void Game::progressNormalMode(float deltaTime)
 {
     // check the waves timings
@@ -207,13 +220,17 @@ void Game::progressNormalMode(float deltaTime)
 
 
 /*
-    this is the a big focus, as its decent for an infinity mode
+    its decent for an infinity mode, but added waves
     originally:
         inefficient -> no reuse of dead vampires, reallocating every time instead
         no agency on the gamedesigners part -> fully random spawnlocation
         looping over dead enemies makes it a bit slower
+        not all enemies spawn the same distance away
     fixes:
         alive and dead enemy tracking
+        the waveeditor window allows designers to make changes on how a wave should behave
+        separated the alive and dead vampiers, hopefully more cache hits are worth the small extra compute
+        in the wave aka normal mode all the distances are windowwidth / 2
 */
 void Game::progressInfiniteMode(float deltaTime)
 {
@@ -250,7 +267,7 @@ void Game::progressInfiniteMode(float deltaTime)
     m_vampireCooldown = m_nextVampireCooldown;
 }
 
-void Game::SpawnEnemy(const sf::Vector2f spawnPoint)
+void Game::SpawnEnemy(const sf::Vector2f& spawnPoint)
 {
     if (m_deadEnemies.size() == 0)
         m_aliveEnemies.push_back(std::make_shared<Vampire>(this, spawnPoint));

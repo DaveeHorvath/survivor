@@ -11,6 +11,7 @@
 #include "GameStartWindow.h"
 #include "EnemyEditorWindow.h"
 #include "PlayerEditorWindow.h"
+#include "ScoreboardWindow.h"
 
 int main(int argc, char* argv[])
 {
@@ -31,6 +32,7 @@ int main(int argc, char* argv[])
     std::unique_ptr<GameStartWindow> gameStartWindow = std::make_unique<GameStartWindow>(pGame.get());
     std::unique_ptr<EnemyEditorWindow> enemyEditorWindow = std::make_unique<EnemyEditorWindow>(pGame.get());
     std::unique_ptr<PlayerEditorWindow> playerEditorWindow = std::make_unique<PlayerEditorWindow>(pGame.get());
+    std::unique_ptr<ScoreboardWindow> scoreboardWindow = std::make_unique<ScoreboardWindow>(pGame.get());
 
     // init imgui
     ImGui::SFML::Init(window);
@@ -70,6 +72,7 @@ int main(int argc, char* argv[])
             gameStartWindow->draw();
             enemyEditorWindow->draw();
             playerEditorWindow->draw();
+            scoreboardWindow->draw();
         }
         
         // clear the window with black color

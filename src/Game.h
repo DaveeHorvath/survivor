@@ -60,6 +60,9 @@ public:
     sf::Keyboard::Key p_playerleft = sf::Keyboard::Left;
     sf::Keyboard::Key p_playerright = sf::Keyboard::Right;
     sf::Keyboard::Key p_playerattack = sf::Keyboard::Space;
+    void saveScore();
+    void setName(const std::string& s);
+    std::vector<std::pair<std::string, int>>& getScores() { return m_scores; };
 private:
     std::unique_ptr<Player> m_pPlayer;
 
@@ -70,7 +73,6 @@ private:
     float m_vampireCooldown = 0.0f;
     float m_nextVampireCooldown = 2.0f;
     int m_spawnCount = 0;
-    int m_score = 0;
     
     sf::Font m_font;
     sf::Texture m_vampTexture;
@@ -79,7 +81,15 @@ private:
     int m_currentWave = 0;
     void progressNormalMode(float deltaTime);
     void progressInfiniteMode(float deltaTime);
-    void SpawnEnemy(const sf::Vector2f spawnPoint);
+    void SpawnEnemy(const sf::Vector2f& spawnPoint);
+    // resizeable, but continous and doesnt reallocate on each insertion
     std::vector<std::shared_ptr<Vampire>> m_aliveEnemies;
+    // fast front and back access, no between access
     std::deque<std::shared_ptr<Vampire>> m_deadEnemies;
+
+    // player name for score
+    std::string m_currentPlayer;
+    int m_score = 0;
+    // not big performance bottleneck, as it only changes when there is not many other things happening
+    std::vector<std::pair<std::string, int>> m_scores;
 };

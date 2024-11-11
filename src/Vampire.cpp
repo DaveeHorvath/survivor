@@ -28,7 +28,11 @@ void Vampire::update(float deltaTime)
     }
 
     if (collidesWith(pPlayer))
+    {
+        if (pPlayer->isDead() == false)
+            m_pGame->saveScore();
         pPlayer->setIsDead(true);
+    }
 
     sf::Vector2f playerCenter = pPlayer->getCenter();
     sf::Vector2f direction = VecNormalized(playerCenter - getCenter());
