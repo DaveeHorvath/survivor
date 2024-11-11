@@ -21,6 +21,8 @@ bool Player::initialise()
     setIsDead(false);
     setPosition(ScreenWidth / 2, ScreenHeight / 2);
     m_sprite.setPosition(getPosition());
+    // this didnt reset the weapons position on restart, which sometimes left the weapon floating on the startscreen
+    m_pWeapon->setActive(false);
     return true;
 }
 

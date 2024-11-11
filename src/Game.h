@@ -31,6 +31,7 @@ public:
     void resetLevel();
     void draw(sf::RenderTarget &target, sf::RenderStates states) const override;
     
+    void startGame() { m_state = State::ACTIVE; }
     State getState() const { return m_state; }
     
     void onKeyPressed(sf::Keyboard::Key key);

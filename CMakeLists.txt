@@ -11,6 +11,24 @@ FetchContent_Declare(SFML
     GIT_SHALLOW ON)
 FetchContent_MakeAvailable(SFML)
 
+# adding sfml imgui based on their documentation
+FetchContent_Declare(
+    imgui
+    URL "https://github.com/ocornut/imgui/archive/v1.89.zip"
+)
+FetchContent_MakeAvailable(imgui)
+
+FetchContent_Declare(
+    imgui-sfml
+    GIT_REPOSITORY https://github.com/SFML/imgui-sfml.git
+    GIT_TAG        2.6.x
+)
+
+set(IMGUI_DIR ${imgui_SOURCE_DIR})
+option(IMGUI_SFML_FIND_SFML "Use find_package to find SFML" OFF)
+option(IMGUI_SFML_IMGUI_DEMO "Build imgui_demo.cpp" ON)
+FetchContent_MakeAvailable(imgui-sfml)
+
 file(GLOB_RECURSE SOURCES
     src/*.mm
     src/*.m
@@ -22,6 +40,7 @@ file(GLOB_RECURSE SOURCES
 
 add_executable(survive ${SOURCES})
 target_link_libraries(survive PRIVATE sfml-graphics sfml-audio sfml-network)
+target_link_libraries(survive PUBLIC ImGui-SFML::ImGui-SFML)
 target_compile_features(survive PRIVATE cxx_std_17)
 
 add_custom_command(

@@ -66,11 +66,6 @@ void Game::update(float deltaTime)
     {
         case State::WAITING:
         {
-            if (m_pClock->getElapsedTime().asSeconds() >= 3.f)
-            {
-                m_state = State::ACTIVE;
-                m_pClock->restart();
-            }
         }
         break;
             
@@ -109,26 +104,28 @@ void Game::update(float deltaTime)
 
 void Game::draw(sf::RenderTarget &target, sf::RenderStates states) const
 {
+    // no need to recreate every frame
+    static sf::Text startText;
+    static sf::Text timerText;
     //  Draw texts.
-    if (m_state == State::WAITING)
+    switch (m_state)
     {
-        sf::Text startText;
+    case State::WAITING:
         startText.setFont(m_font);
         startText.setString("Game Start!");
         startText.setFillColor(sf::Color::White);
         startText.setPosition(80.0f, 80.0f);
         startText.setStyle(sf::Text::Bold);
         target.draw(startText);
-    }
-    else
-    {
-        sf::Text timerText;
+        break;
+    case State::ACTIVE:
         timerText.setFont(m_font);
         timerText.setFillColor(sf::Color::White);
         timerText.setStyle(sf::Text::Bold);
         timerText.setString(std::to_string((int)m_pClock->getElapsedTime().asSeconds()));
         timerText.setPosition(sf::Vector2f((ScreenWidth - timerText.getLocalBounds().getSize().x) * 0.5, 20));
         target.draw(timerText);
+        break;
     }
 
     // Draw player.
@@ -157,6 +154,13 @@ Player* Game::getPlayer() const
     return m_pPlayer.get();
 }
 
+/*
+    this is the a big focus, as its decent for an infinity mode
+    originally:
+        incredibly inefficient -> no reuse of dead vampires
+        no agency on the gamedesigners part -> fully random spawnlocation
+        vector because of the unknown size -> could fix size per wave for array for faster access
+*/
 void Game::vampireSpawner(float deltaTime)
 {
     if (m_vampireCooldown > 0.0f)
@@ -185,6 +189,7 @@ void Game::vampireSpawner(float deltaTime)
     m_spawnCount++;
     if (m_spawnCount % 5 == 0)
     {
+        //relativly unsafe, negative times dont really make sense
         m_nextVampireCooldown -= 0.1f;
     }
     m_vampireCooldown = m_nextVampireCooldown;

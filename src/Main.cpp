@@ -6,6 +6,8 @@
 #include <iostream>
 
 #include "ResourceManager.h"
+#include "imgui-SFML.h"
+#include "imgui.h"
 
 int main(int argc, char* argv[])
 {
@@ -21,6 +23,9 @@ int main(int argc, char* argv[])
         std::cerr << "Game Failed to initialise" << std::endl;
         return 1;
     }
+
+    // init imgui
+    ImGui::SFML::Init(window);
     
     sf::Clock clock;
     // run the program as long as the window is open
@@ -30,6 +35,7 @@ int main(int argc, char* argv[])
         sf::Event event;
         while (window.pollEvent(event))
         {
+            ImGui::SFML::ProcessEvent(window, event);
             switch(event.type)
             {
                 case sf::Event::Closed:
@@ -48,17 +54,28 @@ int main(int argc, char* argv[])
         }
         
         sf::Time elapsedTime = clock.getElapsedTime();
-        clock.restart();
+        ImGui::SFML::Update(window, clock.restart());
         pGame->update(elapsedTime.asSeconds());
+        if (pGame->getState() == Game::State::WAITING)
+        {
+            ImGui::Begin("Hello, world!");
+            if (ImGui::Button("Look at this pretty button"))
+                pGame->startGame();
+            ImGui::End();
+        }
         
         // clear the window with black color
         window.clear(sf::Color::Black);
         
         window.draw(*pGame.get());
+        // only render imgui while waiting
+        ImGui::SFML::Render(window);
         
         // end the current frame
         window.display();
     }
+
+    ImGui::SFML::Shutdown();
     
     return 0;
 }
