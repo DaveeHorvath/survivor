@@ -4,6 +4,7 @@
 #include "Constants.h"
 #include <vector>
 #include "Game.h"
+#include "MathUtils.h"
 
 Player::Player(Game* pGame) :
     Rectangle(sf::Vector2f(PlayerWidth, PlayerHeight)),
@@ -25,19 +26,19 @@ bool Player::initialise()
 
 void Player::move(InputData inputData, float deltaTime)
 {
-    float xSpeed = 0.0f;
-    float ySpeed = 0.0f;
+    // this was missing the normalised movement, moving faster when pressing both
+    // refactored to be inline with other code in codebase
+    sf::Vector2f playerDirection;
     
-    xSpeed -= inputData.m_movingLeft * PlayerSpeed;
-    xSpeed += inputData.m_movingRight * PlayerSpeed;
-    xSpeed *= deltaTime;
+    playerDirection.x -= inputData.m_movingLeft;
+    playerDirection.x += inputData.m_movingRight;
+    playerDirection.y -= inputData.m_movingUp;
+    playerDirection.y += inputData.m_movingDown;
+    VecNormalized(playerDirection);
 
-    ySpeed -= inputData.m_movingUp * PlayerSpeed;
-    ySpeed += inputData.m_movingDown * PlayerSpeed;
-    ySpeed *= deltaTime;
-    
-    sf::Transformable::move(sf::Vector2f(xSpeed, ySpeed));
-    setPosition(std::clamp(getPosition().x, 0.0f, (float)ScreenWidth), getPosition().y);
+    sf::Transformable::move(playerDirection * PlayerSpeed * deltaTime);
+    // this was missing the y direction clamp
+    setPosition(std::clamp(getPosition().x, 0.0f, (float)ScreenWidth), std::clamp(getPosition().y, 0.0f, (float)ScreenHeight));
 
     if (m_pWeapon->isActive() == false)
     {
