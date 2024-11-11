@@ -1,3 +1,30 @@
+# Disclaimer
+- Wasnt willing to write my own UI library, and this is the safest way of including the dependecies, it gives a warning, but didnt cause issue on neither linux nor windows
+- Changed the cmake file according to the sfml-imgui github: https://github.com/SFML/imgui-sfml
+- I am not associated with the above mentioned repo, I am just a user, it is developed by a third party. All the other code has been developed by myself according to the documentation
+# Usage and changes
+- Added editorwindows for prototyping, building and changing the game. Fixed a couple bugs while i was at it.
+- The WaveEditor allows to set a distribution of the incomming enemies from 8 directions, so the incomming enemies will respect the given distribution in each octal. Inside of them there is a supposed uniform distribution. WaveDuration is the time over which Numberofenemies will be spawned. It allows to export the current setup into a hardcoded path in the assets folder for further analytics
+- The PlayerEditor allows to test the game with multiple keyboard setups, the Godmode is only there to allow for checking the of the infinitymode, it softlocks, so exiting is advised, defaultvalues are read from the constants file.
+- The Enemyeditor allows speedchanges and scoring influence.
+- Start the game with the topright button, default username is goofy, refering to me for almost missing that case
+- The score tracks the amount of kills, not the time spent
+- didnt reskin the game, it has a nostalgic and soothing vibe compared to the editor
+
+# Bugs fixed
+- missing random seed for rand()
+- always recreating and reassinging the whole sf::Text
+- infinity mode negative times if the player is too good (now capped)
+- Player Movement more according to the vampires + same speed even at diagonals (added the mathutils.cpp to reuse the same functions)
+- Playermovement clamping missing y direction and on left and bottom spritesize
+- playerweapon vanish on death
+- default case for the weapondirection
+- only kill when vampire when weapon is drawn
+- reuse vampire shared pointers - not really a bug, just a very simple pooling of the dead until limit is reached. this should speedup the drawing of the alive ones as well
+- the weapon is behaving strangly but its a feature, as long as the attack button is pressed the weapon is drawn and damaging
+- Marked in the code + some somewhat optimisations and rationals
+
+
 # Supercell Coding Test
 Hi! This is the base code structure for the Supercell coding test.
 The code below is a very basic and intensionally broken version of a generic survivor game.

@@ -15,8 +15,7 @@ const float WeaponHeight = 10.0f;
 const float WeaponWidth = 100.0f;
 const float WeaponActiveTime = 0.25f;
 
+// extra constants
 const int MaxDeadEnemiesStored = 42;
 const float MinEnemySpawnTime = 0.3f;
 const int MaxWaveCount = 10;
-
-const char LogFileName[10] = "score.txt";

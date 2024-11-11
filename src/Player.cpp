@@ -49,12 +49,15 @@ void Player::move(InputData inputData, float deltaTime)
         )
     );
 
+    // added default case
     if (m_pWeapon->isActive() == false)
     {
         if (inputData.m_movingLeft == true && inputData.m_movingRight == false)
             m_direction = LEFT;
         else if (inputData.m_movingLeft == false && inputData.m_movingRight == true)
             m_direction = RIGHT;
+        else
+            m_direction = LEFT;
     }
 }
 

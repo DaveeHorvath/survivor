@@ -21,6 +21,7 @@ void Vampire::update(float deltaTime)
 {    
     Player* pPlayer = m_pGame->getPlayer();
 
+    // only kill when weapon is drawn
     if (collidesWith(pPlayer->getWeapon()) && pPlayer->getWeapon()->isActive())
     {
         setIsKilled(true);

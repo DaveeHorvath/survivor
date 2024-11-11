@@ -20,7 +20,7 @@ int main(int argc, char* argv[])
 
     sf::RenderWindow window(sf::VideoMode(ScreenWidth, ScreenHeight), "Survive");
     window.setKeyRepeatEnabled(false);
-    
+    srand(time(NULL));
     std::unique_ptr<Game> pGame = std::make_unique<Game>();
     if (!pGame->initialise())
     {
@@ -28,6 +28,7 @@ int main(int argc, char* argv[])
         return 1;
     }
 
+    // imgui windows for prototyping
     std::unique_ptr<WaveEditorWindow> waveEditor = std::make_unique<WaveEditorWindow>(pGame.get());
     std::unique_ptr<GameStartWindow> gameStartWindow = std::make_unique<GameStartWindow>(pGame.get());
     std::unique_ptr<EnemyEditorWindow> enemyEditorWindow = std::make_unique<EnemyEditorWindow>(pGame.get());
@@ -66,6 +67,7 @@ int main(int argc, char* argv[])
         sf::Time elapsedTime = clock.getElapsedTime();
         ImGui::SFML::Update(window, clock.restart());
         pGame->update(elapsedTime.asSeconds());
+        // draw the debug windows if the game isnt running
         if (pGame->getState() == Game::State::WAITING)
         {
             waveEditor->draw();

@@ -98,6 +98,7 @@ void Game::update(float deltaTime)
         break;
     }
 
+    // check for dead enemies
     for (auto it = m_aliveEnemies.begin(); it != m_aliveEnemies.end();)
     {
         if ((*it)->isKilled())
@@ -165,10 +166,9 @@ void Game::startGame()
 {
     m_state = State::ACTIVE;
     m_score = 0;
+    // init the waves here so the distribution gets recalculated only once
     for (auto& wave : p_waves)
-    {
         wave->init();
-    }
     m_pClock->restart();
 }
 
@@ -187,6 +187,8 @@ Player* Game::getPlayer() const
     return m_pPlayer.get();
 }
 
+// start with the waves and go to the infinite mode given
+// Godmode for testing
 void Game::vampireSpawner(float deltaTime)
 {
     if (m_currentWave < p_waves.size())
@@ -269,6 +271,7 @@ void Game::progressInfiniteMode(float deltaTime)
     m_vampireCooldown = m_nextVampireCooldown;
 }
 
+// utility to reuse already allocated sharedpointers
 void Game::SpawnEnemy(const sf::Vector2f& spawnPoint)
 {
     if (m_deadEnemies.size() == 0)

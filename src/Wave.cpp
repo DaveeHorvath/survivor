@@ -10,7 +10,9 @@ Wave::Wave(const std::string& name)
 
 void Wave::init()
 {
-    // only create the distribution once we enter the gamestate
+    // only create the distribution once we enter the gamestate, if all are 0 set first to 1
+    if (std::all_of(m_directions.begin(), m_directions.end(), [](int x){return x == 0;}))
+        m_directions[0] = 1;
     m_distribution.param({c_directionRadians.begin(), c_directionRadians.end(), m_directions.begin()});
     m_coolDown = m_waveDuration / p_enemyNumber;
     p_enemyRemaining = p_enemyNumber;

@@ -1,7 +1,7 @@
 #include "PlayerEditorWindow.h"
 #include "imgui.h"
 #include "Game.h"
-
+#include <iostream>
 PlayerEditorWindow::PlayerEditorWindow(Game *game) : m_game(game)
 {
 }
@@ -26,20 +26,23 @@ void PlayerEditorWindow::draw()
 
 void PlayerEditorWindow::InputSelector(const std::string& buttonName, sf::Keyboard::Key& target)
 {
-    std::string current = sf::Keyboard::getDescription(static_cast<sf::Keyboard::Scancode>(target));
+    // use the fact that enums have their possible values in order so if we just cast them from int should be fine
+    std::string current = sf::Keyboard::getDescription(sf::Keyboard::delocalize(static_cast<sf::Keyboard::Key>(target)));
     if (ImGui::BeginCombo(buttonName.c_str(), current.c_str()))
     {
+        // a-z
         for (int key = sf::Keyboard::Key::Unknown; key != sf::Keyboard::Key::Num0 + 1; key++)
         {
             bool isSelected = target == key;
-            std::string name = sf::Keyboard::getDescription(static_cast<sf::Keyboard::Scancode>(key));
+            std::string name = sf::Keyboard::getDescription(sf::Keyboard::delocalize(static_cast<sf::Keyboard::Key>(key)));
             if (ImGui::Selectable(name.c_str(), &isSelected))
                 target = static_cast<sf::Keyboard::Key>(key);
         }
+        // left -> numpad end
         for (int key = sf::Keyboard::Key::Left; key != sf::Keyboard::Key::F1; key++)
         {
             bool isSelected = target == key;
-            std::string name = sf::Keyboard::getDescription(static_cast<sf::Keyboard::Scancode>(key));
+            std::string name = sf::Keyboard::getDescription(sf::Keyboard::delocalize(static_cast<sf::Keyboard::Key>(key)));
             if (ImGui::Selectable(name.c_str(), &isSelected))
                 target = static_cast<sf::Keyboard::Key>(key);
         }
