@@ -7,7 +7,8 @@
 
 #include "ResourceManager.h"
 #include "imgui-SFML.h"
-#include "imgui.h"
+#include "WaveEditorWindow.h"
+#include "GameStartWindow.h"
 
 int main(int argc, char* argv[])
 {
@@ -23,6 +24,9 @@ int main(int argc, char* argv[])
         std::cerr << "Game Failed to initialise" << std::endl;
         return 1;
     }
+
+    std::unique_ptr<WaveEditorWindow> waveEditor = std::make_unique<WaveEditorWindow>(pGame.get());
+    std::unique_ptr<GameStartWindow> gameStartWindow = std::make_unique<GameStartWindow>(pGame.get());
 
     // init imgui
     ImGui::SFML::Init(window);
@@ -58,17 +62,14 @@ int main(int argc, char* argv[])
         pGame->update(elapsedTime.asSeconds());
         if (pGame->getState() == Game::State::WAITING)
         {
-            ImGui::Begin("Hello, world!");
-            if (ImGui::Button("Look at this pretty button"))
-                pGame->startGame();
-            ImGui::End();
+            waveEditor->draw();
+            gameStartWindow->draw();
         }
         
         // clear the window with black color
         window.clear(sf::Color::Black);
         
         window.draw(*pGame.get());
-        // only render imgui while waiting
         ImGui::SFML::Render(window);
         
         // end the current frame

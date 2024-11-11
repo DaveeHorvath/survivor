@@ -36,11 +36,18 @@ void Player::move(InputData inputData, float deltaTime)
     playerDirection.x += inputData.m_movingRight;
     playerDirection.y -= inputData.m_movingUp;
     playerDirection.y += inputData.m_movingDown;
-    VecNormalized(playerDirection);
+    playerDirection = VecNormalized(playerDirection);
 
     sf::Transformable::move(playerDirection * PlayerSpeed * deltaTime);
-    // this was missing the y direction clamp
-    setPosition(std::clamp(getPosition().x, 0.0f, (float)ScreenWidth), std::clamp(getPosition().y, 0.0f, (float)ScreenHeight));
+    // this was missing the y direction clamp and the sprite size offset
+    setPosition(
+        std::clamp(
+            getPosition().x, 0.0f, (float)ScreenWidth - m_sprite.getTextureRect().width * m_sprite.getScale().x
+        ),
+        std::clamp(
+            getPosition().y, 0.0f, (float)ScreenHeight - m_sprite.getTextureRect().height * m_sprite.getScale().y
+        )
+    );
 
     if (m_pWeapon->isActive() == false)
     {

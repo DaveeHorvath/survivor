@@ -18,10 +18,7 @@ Vampire::Vampire(Game* game, sf::Vector2f position) :
 }
 
 void Vampire::update(float deltaTime)
-{
-    if (m_isKilled)
-        return;
-    
+{    
     Player* pPlayer = m_pGame->getPlayer();
 
     if (collidesWith(pPlayer->getWeapon()))

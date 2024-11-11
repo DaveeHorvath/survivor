@@ -4,12 +4,17 @@
 #include <SFML/Graphics/Font.hpp>
 #include <SFML/Window/Keyboard.hpp>
 #include <memory>
+#include <deque>
+#include <array>
+#include <vector>
 #include "Constants.h"
+#include <SFML/Graphics/Text.hpp>
 
 class Player;
 class Game;
 class GameInput;
 class Vampire;
+class Wave;
 
 namespace sf { class Clock; }
 
@@ -31,7 +36,7 @@ public:
     void resetLevel();
     void draw(sf::RenderTarget &target, sf::RenderStates states) const override;
     
-    void startGame() { m_state = State::ACTIVE; }
+    void startGame();
     State getState() const { return m_state; }
     
     void onKeyPressed(sf::Keyboard::Key key);
@@ -43,10 +48,9 @@ public:
 
     void vampireSpawner(float deltaTime);
 
+    std::array<std::unique_ptr<Wave>, MaxWaveCount> p_waves;
 private:
     std::unique_ptr<Player> m_pPlayer;
-
-    std::vector<std::unique_ptr<Vampire>> m_pVampires;
 
     State m_state;
     std::unique_ptr<sf::Clock> m_pClock;
@@ -59,4 +63,11 @@ private:
     sf::Font m_font;
     sf::Texture m_vampTexture;
     sf::Texture m_playerTexture;
+
+    int m_currentWave = 0;
+    void progressNormalMode(float deltaTime);
+    void progressInfiniteMode(float deltaTime);
+    void SpawnEnemy(const sf::Vector2f spawnPoint);
+    std::vector<std::shared_ptr<Vampire>> m_aliveEnemies;
+    std::deque<std::shared_ptr<Vampire>> m_deadEnemies;
 };

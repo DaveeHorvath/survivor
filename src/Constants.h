@@ -14,3 +14,7 @@ const float VampireSpeed = 100.0f;
 const float WeaponHeight = 10.0f;
 const float WeaponWidth = 100.0f;
 const float WeaponActiveTime = 0.25f;
+
+const int MaxDeadEnemiesStored = 42;
+const float MinEnemySpawnTime = 0.3f;
+const int MaxWaveCount = 10;

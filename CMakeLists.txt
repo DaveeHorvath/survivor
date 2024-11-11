@@ -14,7 +14,7 @@ FetchContent_MakeAvailable(SFML)
 # adding sfml imgui based on their documentation
 FetchContent_Declare(
     imgui
-    URL "https://github.com/ocornut/imgui/archive/v1.89.zip"
+    URL "https://github.com/ocornut/imgui/archive/v1.91.4.zip"
 )
 FetchContent_MakeAvailable(imgui)
 

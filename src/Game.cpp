@@ -10,6 +10,7 @@
 #include "Player.h"
 #include "Rectangle.h"
 #include "Vampire.h"
+#include "Wave.h"
 
 Game::Game() :
     m_state(State::WAITING),
@@ -19,6 +20,11 @@ Game::Game() :
     m_nextVampireCooldown(2.0f)
 {
     m_pGameInput = std::make_unique<GameInput>(this, m_pPlayer.get());
+    // needs slight change
+    for (int i = 0; i < MaxWaveCount; i++)
+        p_waves[i] = std::make_unique<Wave>("Wave" + std::to_string(i));
+    m_aliveEnemies.clear();
+    m_deadEnemies.clear();
 }
 
 Game::~Game()
@@ -54,7 +60,8 @@ bool Game::initialise()
 
 void Game::resetLevel()
 {
-    m_pVampires.clear();
+    m_aliveEnemies.clear();
+    // no need to clear the dead enemies, we can reuse them on the next run
 
     m_pPlayer->initialise();
     m_pClock->restart();
@@ -75,7 +82,7 @@ void Game::update(float deltaTime)
             m_pPlayer->update(deltaTime);
 
             vampireSpawner(deltaTime);
-            for (auto& temp : m_pVampires)
+            for (auto& temp : m_aliveEnemies)
             {
                 temp->update(deltaTime);
             }
@@ -89,42 +96,56 @@ void Game::update(float deltaTime)
         break;
     }
 
-    int i = 0;
-    while (i < m_pVampires.size())
+    for (auto it = m_aliveEnemies.begin(); it != m_aliveEnemies.end();)
     {
-        if (m_pVampires[i]->isKilled())
+        if ((*it)->isKilled())
         {
-            std::swap(m_pVampires[i], m_pVampires.back());
-            m_pVampires.pop_back();
-            continue;
+            if (m_deadEnemies.size() < MaxDeadEnemiesStored)
+                m_deadEnemies.push_front(*it);
+            it = m_aliveEnemies.erase(it);
         }
-        i++;
+        else
+            it++;
     }
 }
 
 void Game::draw(sf::RenderTarget &target, sf::RenderStates states) const
 {
-    // no need to recreate every frame
+    // no need to recreate every frame, nor to call all the functions
+    // a good compiler should recognise that this needs to be called once
     static sf::Text startText;
     static sf::Text timerText;
+    static sf::Text WaveText;
+    static bool textSetupDone = false;
+
+    if (!textSetupDone)
+    {
+        textSetupDone = true;
+        startText.setFont(m_font);
+        startText.setString("Game Start!");
+        startText.setFillColor(sf::Color::White);
+        startText.setStyle(sf::Text::Bold);
+        startText.setPosition(sf::Vector2f((ScreenWidth - startText.getLocalBounds().getSize().x) * 0.5, 20));
+        timerText.setFont(m_font);
+        timerText.setFillColor(sf::Color::White);
+        timerText.setStyle(sf::Text::Bold);
+        WaveText.setFont(m_font);
+        WaveText.setFillColor(sf::Color::White);
+        WaveText.setStyle(sf::Text::Bold);
+    }
     //  Draw texts.
     switch (m_state)
     {
     case State::WAITING:
-        startText.setFont(m_font);
-        startText.setString("Game Start!");
-        startText.setFillColor(sf::Color::White);
-        startText.setPosition(80.0f, 80.0f);
-        startText.setStyle(sf::Text::Bold);
         target.draw(startText);
         break;
     case State::ACTIVE:
-        timerText.setFont(m_font);
-        timerText.setFillColor(sf::Color::White);
-        timerText.setStyle(sf::Text::Bold);
         timerText.setString(std::to_string((int)m_pClock->getElapsedTime().asSeconds()));
         timerText.setPosition(sf::Vector2f((ScreenWidth - timerText.getLocalBounds().getSize().x) * 0.5, 20));
+        WaveText.setString("Wave " + std::to_string(m_currentWave));
+        WaveText.setPosition(sf::Vector2f((ScreenWidth - WaveText.getLocalBounds().getSize().x) * 0.5, 0));
         target.draw(timerText);
+        target.draw(WaveText);
         break;
     }
 
@@ -132,12 +153,19 @@ void Game::draw(sf::RenderTarget &target, sf::RenderStates states) const
     m_pPlayer->draw(target, states);
 
     //  Draw world.
-    for (auto& temp : m_pVampires)
-    {
+    for (auto& temp : m_aliveEnemies)
         temp->draw(target, states);
-    }
 }
 
+void Game::startGame()
+{
+    m_state = State::ACTIVE;
+    for (auto& wave : p_waves)
+    {
+        wave->init();
+    }
+    m_pClock->restart();
+}
 
 void Game::onKeyPressed(sf::Keyboard::Key key)
 {
@@ -154,14 +182,38 @@ Player* Game::getPlayer() const
     return m_pPlayer.get();
 }
 
+void Game::vampireSpawner(float deltaTime)
+{
+    if (m_currentWave < p_waves.size())
+        progressNormalMode(deltaTime);
+    else
+        progressInfiniteMode(deltaTime);
+}
+
+void Game::progressNormalMode(float deltaTime)
+{
+    // check the waves timings
+    if (p_waves[m_currentWave]->getSpawnCooldown(deltaTime) > 0.0f)
+        return;
+    // spawn new enemy
+    sf::Vector2f enemyDir = p_waves[m_currentWave]->getNextSpawnDirection();
+
+    SpawnEnemy(enemyDir * static_cast<float>(ScreenWidth) * 0.6f + sf::Vector2f(ScreenWidth / 2, ScreenHeight / 2));
+    if (p_waves[m_currentWave]->p_enemyRemaining <= 0)
+        m_currentWave++;
+}
+
+
 /*
     this is the a big focus, as its decent for an infinity mode
     originally:
-        incredibly inefficient -> no reuse of dead vampires
+        inefficient -> no reuse of dead vampires, reallocating every time instead
         no agency on the gamedesigners part -> fully random spawnlocation
-        vector because of the unknown size -> could fix size per wave for array for faster access
+        looping over dead enemies makes it a bit slower
+    fixes:
+        alive and dead enemy tracking
 */
-void Game::vampireSpawner(float deltaTime)
+void Game::progressInfiniteMode(float deltaTime)
 {
     if (m_vampireCooldown > 0.0f)
     {
@@ -184,13 +236,27 @@ void Game::vampireSpawner(float deltaTime)
         randomYPos += yMinDist;
 
     sf::Vector2f spawnPosition = sf::Vector2f(randomXPos, randomYPos);
-    m_pVampires.push_back(std::make_unique<Vampire>(this, spawnPosition));
+    SpawnEnemy(spawnPosition);
 
     m_spawnCount++;
     if (m_spawnCount % 5 == 0)
     {
-        //relativly unsafe, negative times dont really make sense
-        m_nextVampireCooldown -= 0.1f;
+        // unsafe, negative times didnt make sense
+        if (m_nextVampireCooldown > MinEnemySpawnTime)
+            m_nextVampireCooldown -= 0.1f;
     }
     m_vampireCooldown = m_nextVampireCooldown;
+}
+
+void Game::SpawnEnemy(const sf::Vector2f spawnPoint)
+{
+    if (m_deadEnemies.size() == 0)
+        m_aliveEnemies.push_back(std::make_shared<Vampire>(this, spawnPoint));
+    else
+    {
+        m_deadEnemies.back()->setPosition(spawnPoint);
+        m_deadEnemies.back()->setIsKilled(false);
+        m_aliveEnemies.push_back(m_deadEnemies.back());
+        m_deadEnemies.pop_back();
+    }
 }
