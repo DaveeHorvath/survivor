@@ -6,6 +6,11 @@
 #include <memory>
 #include <random>
 #include <math.h>
+// windows safety or something
+// shouldve been M_PI = 3 for windows, but that would be evil and make it less nice
+#ifndef M_PI
+# define M_PI 3.141592
+#endif
 
 class Wave {
 public:
