@@ -25,8 +25,8 @@
 - Marked in the code + some somewhat optimisations and rationals
 
 
-# Supercell Coding Test
-Hi! This is the base code structure for the Supercell coding test.
+# Coding Test
+Hi! This is the base code structure for the coding test.
 The code below is a very basic and intensionally broken version of a generic survivor game.
 
 ## Disclaimer
